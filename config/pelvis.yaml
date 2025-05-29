@@ -1,14 +1,16 @@
 epochs: 50
-log_every: 10 
+log_every: 10
 ckpt_every: 50_000
 accumulation_steps: 1
 lr: 1e-4
 
 results_dir: "./results/pelvis"
 model: "DiffMa-L/2"
+# use B for pretrained weight and L for self-training?
+# B uses about 40min/epoch, L requires 1h
+
 image_size: 224  #[224, 256, 512]
 global_batch_size: 1
-
 global_seed: 0
 vae: "ema" #choices=["ema", "mse"]
 num_workers: 4
@@ -16,13 +18,14 @@ ct_ckpt: "./pretrain_ct_vision_embedder/pelvis_patch_size_2.pt"
 dt_rank: 16
 d_state: 16 
 
+# Pretain weights settings. 
 init_from_pretrain_ckpt: False
 pretrain_ckpt_path: "results/0200000.pt" 
 init_train_steps: 200_000
 lr_: 1e-4
 
 #sample
-ckpt: "results/pelvis/019-DiM-B-2/checkpoints/1350000.pt" 
+ckpt: "results/DiffMa_1000000.pt"
 save_dir: "./result_sample/pelvis_ssim_DiM_done"
 seed: 0
 sample_global_batch_size: 1 #16
@@ -41,11 +44,18 @@ embedder_patch_size: 2
 embedder_results_dir: './results_ct_pelvis'
 
 # train
-ct_image_folder_train: '/root/code/CTtoMRI/datasets/SynthRAD2023/train/pelvis/train2D/B_norm/'    #CT
-mir_image_folder_train: '/root/code/CTtoMRI/datasets/SynthRAD2023/train/pelvis/train2D/A_norm/'    #MIR
-mask_image_folder_train: '/root/code/CTtoMRI/datasets/SynthRAD2023/train/pelvis/train2D/C_norm/'    #mask
+ct_image_folder_train: '/home/anniehuang/CamoDiffusion/media/datasets/pelvis/train2D/B_norm/'    #CT
+mir_image_folder_train: '/home/anniehuang/CamoDiffusion/media/datasets/pelvis/train2D/A_norm/'    #MIR
+mask_image_folder_train: '/home/anniehuang/CamoDiffusion/media/datasets/pelvis/train2D/C_norm/'    #mask
 
 # val
-ct_image_folder_val: '/root/code/CTtoMRI/datasets/SynthRAD2023/train/pelvis/val2D/B_norm/'    #CT
-mir_image_folder_val: '/root/code/CTtoMRI/datasets/SynthRAD2023/train/pelvis/val2D/A_norm/'    #MIR
-mask_image_folder_val: '/root/code/CTtoMRI/datasets/SynthRAD2023/train/pelvis/val2D/C_norm/'    #mask
+ct_image_folder_val: '/home/anniehuang/CamoDiffusion/media/datasets/pelvis/val2D/B_norm/'    #CT
+mir_image_folder_val: '/home/anniehuang/CamoDiffusion/media/datasets/pelvis/val2D/A_norm/'    #MIR
+mask_image_folder_val: '/home/anniehuang/CamoDiffusion/media/datasets/pelvis/val2D/C_norm/'    #mask
+
+# sample
+# mamba1
+# CUDA_VISIBLE_DEVICES=0 torchrun --master_port=12345 --nnodes=1 --nproc_per_node=1 sample.py --config ./config/pelvis.yaml
+
+# train
+# CUDA_VISIBLE_DEVICES=0 torchrun --master_port=12345 --nnodes=1 --nproc_per_node=1 train.py --config ./config/pelvis.yaml --wandb

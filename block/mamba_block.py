@@ -2,8 +2,8 @@ import torch
 from einops import rearrange
 from torch import nn
 from timm.models.vision_transformer import Attention, Mlp
-from block.mamba import Mamba as ssm
-from block.mamba2 import Mamba2 as ssm2
+from .mamba import Mamba as ssm
+from .mamba2 import Mamba2 as ssm2
 
 def modulate(x, shift, scale):
     return x * (1 + scale.unsqueeze(1)) + shift.unsqueeze(1)

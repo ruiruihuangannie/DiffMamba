@@ -22,7 +22,7 @@ init_train_steps: 0_800_000
 lr_: 1e-4
 
 #sample
-ckpt: "results/brain/022-VMamba-BL-2/checkpoints/0750000.pt" 
+ckpt: "results/DiffMa_1000000.pt" 
 save_dir: "./result_sample/brain_ssim_VMamaba_50epoch"
 seed: 0
 sample_global_batch_size: 1 
@@ -42,14 +42,14 @@ embedder_results_dir: './results_ct_brain'
 
 
 # train
-ct_image_folder_train: './datasets/brain/B_train'    #CT
-mir_image_folder_train: './datasets/brain/A_train'    #MIR
-mask_image_folder_train: './datasets/brain/C_train'    #mask
+ct_image_folder_train: '../../media/datasets/brain/train2D/B_norm/'    #CT
+mir_image_folder_train: '../../media/datasets/brain/train2D/A_norm/'    #MIR
+mask_image_folder_train: '../../media/datasets/brain/train2D/C_norm/'    #mask
 
 # val
-ct_image_folder_val: './datasets/brain/B_test'    #CT
-mir_image_folder_val: './datasets/brain/A_test'    #MIR
-mask_image_folder_val: './datasets/brain/C_test'    #mask
+ct_image_folder_val: '../../media/datasets/brain/val2D/B_norm/'    #CT
+mir_image_folder_val: '../../media/datasets/brain/val2D/A_norm/'    #MIR
+mask_image_folder_val: '../../media/datasets/brain/val2D/C_norm/'    #mask
 
 
 # CUDA_VISIBLE_DEVICES=1 torchrun --master_port=12341 --nnodes=1 --nproc_per_node=1 sample.py --config config/brain.yaml

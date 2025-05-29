@@ -25,6 +25,7 @@ from torch.cuda.amp import GradScaler, autocast
 from model import DiffMa_models
 from block.CT_encoder import CT_Encoder
 from omegaconf import OmegaConf
+from tqdm import tqdm
 
 #################################################################################
 #                             Training Helper Functions                         #
@@ -222,7 +223,8 @@ def main(args):
             logger.info(f"Beginning epoch {epoch}...")
         # print(epoch)
         item = 0
-        for x_ct, _, z_mri in train_loader:
+        progress_bar = tqdm(train_loader, total=len(train_loader))
+        for x_ct, _, z_mri in progress_bar:
             item += 1
 
             # If your input dimensions are [B,C,W,H], delete it
@@ -249,7 +251,10 @@ def main(args):
                 loss = loss_dict["loss"].mean()
             
             if rank == 0 and args.wandb:
-                wandb.log({"loss": loss.item()})
+                wandb.log({
+                    "loss": loss.item(),
+                    "learning_rate": opt.param_groups[0]["lr"],
+                })
 
             if torch.isnan(loss).any():  #important
                 logger.info(f"nan......      ignore losses......")
@@ -280,8 +285,9 @@ def main(args):
                 dist.all_reduce(avg_loss, op=dist.ReduceOp.SUM)
                 avg_loss = avg_loss.item() / dist.get_world_size()
                 if rank == 0:
-                    logger.info(f"({epoch_isfinish:.1f}%) (step={train_steps:07d}) Train Loss: {avg_loss:.4f}, Train Steps/Sec: {steps_per_sec:.2f}")
-
+                    # logger.info(f"({epoch_isfinish:.1f}%) (step={train_steps:07d}) Train Loss: {avg_loss:.4f}, Train Steps/Sec: {steps_per_sec:.2f}")
+                    progress_bar.set_description(f"Epoch {epoch} | Step {train_steps}")
+                    progress_bar.set_postfix(loss=f"{loss.item():.4f}")
                 # Reset monitoring variables:
                 running_loss = 0
                 log_steps = 0
